@@ -1,0 +1,2 @@
+1. forked from Jeff's hits repo
+2. 0.1.1: update mapping_tools.py::Star::permissivve

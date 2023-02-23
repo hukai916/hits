@@ -45,13 +45,13 @@ class PairedTemporaryFifos(object):
 
     def __enter__(self):
         self.temp_dir = tempfile.mkdtemp()
-        
+
         # For peace of mind, make sure there are no %'s in the directory name
         # because bowtie2 will be doing a string replacement on %'s.
         while '%' in self.temp_dir:
             os.rmdir(self.temp_dir)
             self.temp_dir = tempfile.mkdtemp()
-        
+
         self.file_name_template = '{0}/R%_{1}.fastq'.format(self.temp_dir, self.name)
 
         self.R1_file_name = self.file_name_template.replace('%', '1')
@@ -155,7 +155,7 @@ def launch_bowtie2(index_prefix,
         bowtie2_command = ['bowtie2']
 
     confirm_index_exists(index_prefix)
-    
+
     for kwarg, bowtie2_argument in kwarg_to_bowtie2_argument:
         if kwarg in options:
             value = options.pop(kwarg)
@@ -220,7 +220,7 @@ def launch_bowtie2(index_prefix,
                                            )
             bowtie2_process.stdout.close()
             process_to_return = view_process
-                 
+
     return process_to_return, bowtie2_command
 
 def _map_bowtie2(index_prefix,
@@ -256,7 +256,7 @@ def _map_bowtie2(index_prefix,
         output_fifo_source = TemporaryFifo(name='output_fifo.sam')
     else:
         output_fifo_source = DoNothing()
-    
+
     with input_fifo_source, output_fifo_source:
         if reads is not None:
             R1_fn = input_fifo_source.file_name
@@ -454,7 +454,7 @@ def map_tophat_paired(R1_fn,
     # tophat maintains its own logs of everything that is written to the
     # console, so discard output.
     subprocess.check_output(tophat_command, stderr=subprocess.STDOUT)
-    
+
     accepted_hits_fn = '{0}/accepted_hits.bam'.format(tophat_dir)
     if not no_sort:
         pysam.index(accepted_hits_fn)
@@ -542,6 +542,7 @@ def map_STAR(R1_fn, index_dir, output_prefix,
             '--outFilterMultimapNmax', '1000',
             '--outFilterScoreMinOverLread', '0',
             '--outFilterMatchNminOverLread', '0',
+            '--outFilterMatchNmin', '0',
         ])
 
     elif mode == 'guide_alignment':
